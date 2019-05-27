@@ -1,13 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Script for the MRI Geometry experiment
+"""Generates csv files of the form "passive-seq_<subject_id>.csv"
 
-Blabla
+usage:
+    generate-passive-seq <subject_id>
+
+optional arguments:
+  -h, --help              Show this help message and exit
 """
 
 import csv
 import random
 import json
+import docopt
+import os.path
 import numpy as np
 
 from math import cos, sin, pi, acos
@@ -176,4 +182,6 @@ def generate_csv(path):
 
 
 if __name__ == "__main__":
-    generate_csv("output.csv")
+    args = docopt.docopt(__doc__, version='0.0.1')
+    s_id = args["<subject_id>"]
+    generate_csv(f"stim/passive-seq_{s_id}.csv")

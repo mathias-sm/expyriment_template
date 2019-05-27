@@ -1,13 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Script for the MRI Geometry experiment
+"""Generates csv files of the form "passive-static_<subject_id>.csv"
 
-Blabla
+usage:
+    generate-passive-static <subject_id>
+
+optional arguments:
+  -h, --help              Show this help message and exit
 """
 
 import csv
 import random
 import json
+import docopt
 import numpy as np
 
 from math import cos, sin, pi, acos
@@ -140,4 +145,6 @@ def generate_csv(path):
 
 
 if __name__ == "__main__":
-    generate_csv("output.csv")
+    args = docopt.docopt(__doc__, version='0.0.1')
+    s_id = args["<subject_id>"]
+    generate_csv(f"stim/passive-static_{s_id}.csv")

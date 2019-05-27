@@ -24,6 +24,9 @@ def init_arguments(args):
         args["window_size"] = (int(args["WINDOW_W"]), int(args["WINDOW_H"]))
     else:
         args["window_size"] = (1220, 700)
+    subject_id = None if (args["--subject-id"] is None) else int(args["--subject-id"])
+    if args["--subject-id"] is not None:
+        args["--subject-id"] = int(args["--subject-id"])
 
 
 
@@ -34,6 +37,7 @@ def init_expyriment(args):
     expyriment.control.defaults.window_size = args["window_size"]
     expyriment.design.defaults.experiment_background_colour = args["bg_color"]
     expyriment.control.defaults.fast_quit = True
+    expyriment.control.defaults.initialize_delay = 0
     exp = expyriment.design.Experiment(name=args["--exp-name"])
     exp.add_data_variable_names(['condition',
                                  'time',

@@ -19,11 +19,12 @@ usage:
                         [options] [--] <file> ...
 
 optional arguments:
-  -h, --help            Show this help message and exit
-  --stim-dir STIM_DIR   Directory to look for stimuli [default: STIM_DIR/]
-  --exp-name EXP_NAME   Name of the experiment        [default: "DefaultName"]
-  --text-font TEXT_FONT Font to use to display text   [default: "dejavusans"]
-  --text-size TEXT_SIZE Font size used for text       [default: 48]
+  -h, --help              Show this help message and exit
+  --subject-id SUBJECT_ID ID of the starting subject
+  --stim-dir STIM_DIR     Directory to look for stimuli [default: STIM_DIR/]
+  --exp-name EXP_NAME     Name of the experiment        [default: "DefaultName"]
+  --text-font TEXT_FONT   Font to use to display text   [default: "dejavusans"]
+  --text-size TEXT_SIZE   Font size used for text       [default: 48]
 """
 
 import os.path
@@ -161,7 +162,9 @@ def main():
             # Then push relevant events based on the type
             events.put((int(onset), cond, stype, f, (stype, f)))
 
-    expyriment.control.start(skip_ready_screen=True)
+    subject_id = None if (args["--subject-id"] is None) else int(args["--subject-id"])
+    expyriment.control.start(skip_ready_screen=True,
+                             subject_id=args["--subject-id"])
 
     show_text("Waiting for scanner sync (or press 't')", args).present()
     kb.wait_char('t')
