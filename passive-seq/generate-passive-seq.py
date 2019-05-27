@@ -26,6 +26,7 @@ def min_dist(l):
             local_min = min(local_min, abs(l[i] - l[i+j+1]))
     return local_min
 
+
 def max_x(vs): return max([a for a, b in vs])
 def max_y(vs): return max([b for a, b in vs])
 def min_x(vs): return min([a for a, b in vs])
