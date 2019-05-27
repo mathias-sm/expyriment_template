@@ -73,11 +73,11 @@ def load_stimuli(stype, f, bp, args):
     elif stype == 'text':
         return show_text(f, args)
     elif stype == 'dot' or stype == 'circle':
-        r, line_width, px, py = [int(x) for x in f.split(";")]
-        return expyriment.stimuli.Circle(r,
+        r, line_width, px, py = f.split(";")
+        return expyriment.stimuli.Circle(int(r),
                                          colour=args["stimuli_color"],
-                                         line_width=line_width,
-                                         position=(px,py),
+                                         line_width=int(line_width),
+                                         position=(float(px),float(py)),
                                          anti_aliasing=10)
     elif stype == 'shape':
         line_width, px, py, *v_list = [literal_eval(x) for x in f.split(";")]
@@ -87,6 +87,10 @@ def load_stimuli(stype, f, bp, args):
                                          anti_aliasing=10)
         shape.add_vertices(v_list)
         return shape
+    if stype == "small_star":
+        px, py, path = f.split(";")
+        return expyriment.stimuli.Picture(os.path.join(bp, path),
+                                          position=(float(px),float(py)))
     elif stype == "oddity":
         canvas = expyriment.stimuli.Canvas(args["window_size"])
         fpath = os.path.join(bp,f)
