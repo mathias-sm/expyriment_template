@@ -2,3 +2,4 @@ STIM_DIR*
 __pycache__
 data
 events
+shapes.json

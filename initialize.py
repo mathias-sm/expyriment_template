@@ -1,7 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-"""Toto"""
 
 import expyriment
 
@@ -15,12 +13,12 @@ def init_arguments(args):
     else:
         args["bg_color"] = (0, 0, 0)
 
-    if args["--text-color"]:
-        args["text_color"] = (int(args["TEXT_R"]),
+    if args["--stimuli-color"]:
+        args["stimuli_color"] = (int(args["TEXT_R"]),
                               int(args["TEXT_G"]),
                               int(args["TEXT_B"]))
     else:
-        args["text_color"] = (127, 127, 127)
+        args["stimuli_color"] = (127, 127, 127)
 
     if args["--window-size"]:
         args["window_size"] = (int(args["WINDOW_W"]), int(args["WINDOW_H"]))
