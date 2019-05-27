@@ -12,17 +12,17 @@ to be easier to hack into.
 Reach out for help with this!
 
 usage:
-    ./launch_experiment calibrate
-    ./launch_experiment [(--stimuli-color TEXT_R TEXT_G TEXT_B)]
-                        [(--background-color BACK_R BACK_G BACK_B)]
-                        [(--window-size WINDOW_W WINDOW_H)]
-                        [options] [--] <file> ...
+    launcher.py calibrate
+    launcher.py [(--stimuli-color TEXT_R TEXT_G TEXT_B)]
+                [(--background-color BACK_R BACK_G BACK_B)]
+                [(--window-size WINDOW_W WINDOW_H)]
+                [options] [--] <file> ...
 
 optional arguments:
   -h, --help              Show this help message and exit
   --subject-id SUBJECT_ID ID of the starting subject
   --stim-dir STIM_DIR     Directory to look for stimuli [default: STIM_DIR/]
-  --exp-name EXP_NAME     Name of the experiment        [default: "DefaultName"]
+  --exp-name EXP_NAME     Name of the experiment        [default: "Default"]
   --text-font TEXT_FONT   Font to use to display text   [default: "dejavusans"]
   --text-size TEXT_SIZE   Font size used for text       [default: 48]
 """
@@ -38,6 +38,7 @@ import initialize
 from ast import literal_eval
 # Used for stimuli in circle in oddity
 from math import sin, cos, pi
+
 
 def calibration(exp, args):
     """This function does the calibration. Put in module if too long."""
@@ -79,11 +80,11 @@ def load_stimuli(stype, f, bp, args):
         stimulus = expyriment.stimuli.Circle(int(r),
                                              colour=args["stimuli_color"],
                                              line_width=int(line_width),
-                                             position=(float(px),float(py)),
+                                             position=(float(px), float(py)),
                                              anti_aliasing=10)
     elif stype == 'shape':
         line_width, px, py, *v_list = [literal_eval(x) for x in f.split(";")]
-        shape = expyriment.stimuli.Shape(position=(int(px),int(py)),
+        shape = expyriment.stimuli.Shape(position=(int(px), int(py)),
                                          colour=args["stimuli_color"],
                                          line_width=int(line_width),
                                          anti_aliasing=10)
@@ -92,16 +93,16 @@ def load_stimuli(stype, f, bp, args):
     if stype == "small_star":
         px, py, path = f.split(";")
         stimulus = expyriment.stimuli.Picture(os.path.join(bp, path),
-                                              position=(float(px),float(py)))
+                                              position=(float(px), float(py)))
     elif stype == "oddity":
         canvas = expyriment.stimuli.Canvas(args["window_size"])
-        fpath = os.path.join(bp,f)
+        fpath = os.path.join(bp, f)
         dist = 200
         alpha = 2*pi/6
         for i, shape in enumerate(csv.reader(open(fpath), delimiter=';')):
             v_list = [literal_eval(x) for x in shape]
             px, py = [dist * f(i*alpha) for f in [cos, sin]]
-            shape = expyriment.stimuli.Shape(position=(int(px),int(py)),
+            shape = expyriment.stimuli.Shape(position=(int(px), int(py)),
                                              colour=args["stimuli_color"],
                                              line_width=0,
                                              anti_aliasing=10)
@@ -110,9 +111,9 @@ def load_stimuli(stype, f, bp, args):
         stimulus = canvas
     elif stype == 'fix':
         stimulus = expyriment.stimuli.FixCross(size=(25, 25),
-                                           line_width=3,
-                                           colour=args["stimuli_color"])
-    elif stype == 'blank': # This should be distinguished from fixation?
+                                               line_width=3,
+                                               colour=args["stimuli_color"])
+    elif stype == 'blank':  # This should be distinguished from fixation?
         return expyriment.stimuli.BlankScreen()
     # canvas = expyriment.stimuli.Canvas(args["window_size"])
     # fix = expyriment.stimuli.FixCross(size=(25, 25),
@@ -170,7 +171,6 @@ def main():
             # Then push relevant events based on the type
             events.put((int(onset), cond, stype, f, (stype, f)))
 
-    subject_id = None if (args["--subject-id"] is None) else int(args["--subject-id"])
     expyriment.control.start(skip_ready_screen=True,
                              subject_id=args["--subject-id"])
 

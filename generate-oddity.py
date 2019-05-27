@@ -3,7 +3,7 @@
 """Generates csv files of the form "passive-static_<subject_id>.csv"
 
 usage:
-    generate-oddity <subject_id>
+    generate-oddity <subject_id> <run_id>
 
 optional arguments:
   -h, --help              Show this help message and exit
@@ -75,12 +75,12 @@ def outlierize(shape):
   return [shape, o1, o2, o3, o4]
 
 
-def generate_csv(s_id):
+def generate_csv(s_id, r_id):
 
     refDilations = [0.875, 0.925, 0.975, 1.025, 1.075, 1.125]
     refAngles = [rot_m(a) for a in [-25, -15, -5, 5, 15, 25]]
 
-    writer = csv.writer(open(f"stim/oddity_{s_id}.csv", mode='w'), delimiter='\t',)
+    writer = csv.writer(open(f"stim/oddity_{s_id}_{r_id}.csv", mode='w'), delimiter='\t',)
     offset = 0
     shapes = json.load(open("shapes.json", mode="r"))
     shapes = {shape: outlierize(shapes[shape]) for shape in shapes.keys()}
@@ -113,8 +113,8 @@ def generate_csv(s_id):
         randomized_type[shape] += l2
         randomized_type[shape] = [x + 1 for x in randomized_type[shape]]
 
-    if not os.path.exists(f"stim/oddity_{s_id}/"):
-        os.makedirs(f"stim/oddity_{s_id}/")
+    if not os.path.exists(f"stim/oddity_{s_id}_{r_id}/"):
+        os.makedirs(f"stim/oddity_{s_id}_{r_id}/")
 
     for i, shape_name in enumerate(names):
         for j in range(10):
@@ -122,7 +122,7 @@ def generate_csv(s_id):
             rots = list(np.random.permutation(range(6)))
             out_pos = randomized_pos[shape_name][j]
             out_type = randomized_type[shape_name][j]
-            stim_fname = f"stim/oddity_{s_id}/{shape_name}_{j}.csv"
+            stim_fname = f"stim/oddity_{s_id}_{r_id}/{shape_name}_{j}.csv"
             writer_stim = csv.writer(open(stim_fname, mode='w'), delimiter=';')
             
             for k in range(6):
@@ -141,13 +141,13 @@ def generate_csv(s_id):
                 # direction correction
                 vs = [rotate(v, refAngles[rots[k]]) for v in vs]
                 vs = [dilate(v, refDilations[dils[k]]) for v in vs]
-                vs = [dilate(v, 100) for v in vs]
+                vs = [dilate(v, 75) for v in vs]
                 writer_stim.writerow(vs)
 
             writer.writerow(["test", offset, "oddity", stim_fname])
-            offset += 2000
-            # writer.writerow(["test", offset, "blank", ""])
-            # offset += 4000
+            offset += 200
+            writer.writerow(["test", offset, "blank", ""])
+            offset += 4000
 
         writer.writerow(["test", offset, "blank", ""])
         offset += (np.random.choice([6, 8, 10], 1)[0]) * 1000
@@ -158,4 +158,5 @@ def generate_csv(s_id):
 if __name__ == "__main__":
     args = docopt.docopt(__doc__, version='0.0.1')
     s_id = args["<subject_id>"]
-    generate_csv(s_id)
+    r_id = args["<run_id>"]
+    generate_csv(s_id, r_id)

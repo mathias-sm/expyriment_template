@@ -3,7 +3,7 @@
 """Generates csv files of the form "passive-seq_<subject_id>.csv"
 
 usage:
-    generate-passive-seq <subject_id>
+    generate-passive-seq <subject_id> <run_id>
 
 optional arguments:
   -h, --help              Show this help message and exit
@@ -185,4 +185,5 @@ def generate_csv(path):
 if __name__ == "__main__":
     args = docopt.docopt(__doc__, version='0.0.1')
     s_id = args["<subject_id>"]
-    generate_csv(f"stim/passive-seq_{s_id}.csv")
+    r_id = args["<run_id>"]
+    generate_csv(f"stim/passive-seq_{s_id}_{r_id}.csv")
