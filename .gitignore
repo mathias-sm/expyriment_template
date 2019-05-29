@@ -2,4 +2,6 @@ STIM_DIR*
 __pycache__
 data
 events
+stim
+output.csv
 shapes.json

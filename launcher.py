@@ -37,7 +37,7 @@ import initialize
 # Used for fast tuple-parsing in loading shapes vertices
 from ast import literal_eval
 # Used for stimuli in circle in oddity
-from math import sin, cos, pi
+from math import sin, cos, pi, sqrt
 
 
 def calibration(exp, args):
@@ -66,22 +66,23 @@ def show_text(text, args):
 
 def load_stimuli(stype, f, bp, args):
     """Does what is appropriate to preload a stimuli based on its "stype" """
-    stimulus = None
     if stype == "picture":
-        stimulus = expyriment.stimuli.Picture(os.path.join(bp, f))
-    elif stype == 'sound':
-        stimulus = expyriment.stimuli.Audio(os.path.join(bp, f))
-    elif stype == 'video':
-        stimulus = expyriment.stimuli.Video(os.path.join(bp, f))
-    elif stype == 'text':
-        stimulus = show_text(f, args)
+        return expyriment.stimuli.Picture(os.path.join(bp, f))
     elif stype == 'dot' or stype == 'circle':
-        r, line_width, px, py = f.split(";")
-        stimulus = expyriment.stimuli.Circle(int(r),
-                                             colour=args["stimuli_color"],
-                                             line_width=int(line_width),
-                                             position=(float(px), float(py)),
-                                             anti_aliasing=10)
+        r, line_width, px, py = [float(x) for x in f.split(";")]
+        d = 2*(max(abs(px), abs(py)) + 2*r)
+        canvas = expyriment.stimuli.Canvas((d,d))
+        dot = expyriment.stimuli.Circle(r,
+                                        colour=args["stimuli_color"],
+                                        line_width=line_width,
+                                        position=(px, py),
+                                        anti_aliasing=10)
+        fix = expyriment.stimuli.FixCross(size=(15, 15),
+                                          line_width=2,
+                                          colour=(0,127,0))
+        fix.plot(canvas)
+        dot.plot(canvas)
+        return(canvas)
     elif stype == 'shape':
         line_width, px, py, *v_list = [literal_eval(x) for x in f.split(";")]
         shape = expyriment.stimuli.Shape(position=(int(px), int(py)),
@@ -89,11 +90,11 @@ def load_stimuli(stype, f, bp, args):
                                          line_width=int(line_width),
                                          anti_aliasing=10)
         shape.add_vertices(v_list)
-        stimulus = shape
+        return shape
     if stype == "small_star":
         px, py, path = f.split(";")
-        stimulus = expyriment.stimuli.Picture(os.path.join(bp, path),
-                                              position=(float(px), float(py)))
+        return expyriment.stimuli.Picture(os.path.join(bp, path),
+                                          position=(float(px), float(py)))
     elif stype == "oddity":
         canvas = expyriment.stimuli.Canvas(args["window_size"])
         fpath = os.path.join(bp, f)
@@ -108,20 +109,14 @@ def load_stimuli(stype, f, bp, args):
                                              anti_aliasing=10)
             shape.add_vertices(v_list)
             shape.plot(canvas)
-        stimulus = canvas
+        return canvas
     elif stype == 'fix':
-        stimulus = expyriment.stimuli.FixCross(size=(25, 25),
-                                               line_width=3,
-                                               colour=args["stimuli_color"])
-    elif stype == 'blank':  # This should be distinguished from fixation?
+        size, lw, cr, cg, cb = [literal_eval(x) for x in f.split(";")]
+        return expyriment.stimuli.FixCross(size=(size, size),
+                                           line_width=lw,
+                                           colour=(cr,cg,cb))
+    elif stype == 'blank':
         return expyriment.stimuli.BlankScreen()
-    # canvas = expyriment.stimuli.Canvas(args["window_size"])
-    # fix = expyriment.stimuli.FixCross(size=(25, 25),
-    #                                     line_width=3,
-    #                                     colour=args["stimuli_color"])
-    # fix.plot(canvas)
-    # stimulus.plot(canvas)
-    return stimulus
 
 
 def main():
@@ -161,7 +156,7 @@ def main():
         # ATTENTION : Encoding is platform dependant. See the open() manual
         for row in csv.reader(open(csv_file), delimiter='\t'):
             # Destruct a row into its parts, they will be of type str
-            cond, onset, stype, f = row
+            cond, onset, stype, f, *meta = row
 
             # If this is the first encounter of this stimuli then preload it
             if (stype, f) not in hash_table:

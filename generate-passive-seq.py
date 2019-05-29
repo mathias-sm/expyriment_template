@@ -86,8 +86,10 @@ def generate_csv(path):
     refDilations = [0.875, 0.925, 0.975, 1.025, 1.075, 1.125]
     refAngles = [rot_m(a) for a in [-25, -15, -5, 5, 15, 25]]
     pt_on = 200
-    pt_off = 100
-    osa = 400
+    pt_off = 50
+    osa = 500
+
+    fix_param = "15;2;0;127;0"
 
     writer = csv.writer(open(path, mode='w'), delimiter='\t',)
     offset = 0
@@ -146,38 +148,49 @@ def generate_csv(path):
             p3 = p2 + vs[1]
             p4 = p3 + vs[2]
             ps = [p1,p2,p3,p4]
+            # Note : sauvegarder le jitter
+            jitter_size = 25
+            jitter_x = np.random.randint(2 * jitter_size + 1) - jitter_size
+            jitter_y = np.random.randint(2 * jitter_size + 1) - jitter_size
+            ps = [x + [jitter_x , jitter_y] for x in ps]
             assert((abs(p1 - (p4 + vs[3])) < 0.0000001).all())
+
+            metadata = [mrun_shapes[i], out, rot, dil, jitter_x, jitter_y]
 
             # Saddly, Expyriment uses the center of the bounding box, not
             # this one: barycenter = (p1 + p2 + p3 + p4) / 4     ;(
             center = [(max_x(ps) + min_x(ps))/2, (max_y(ps) + min_y(ps))/2]
 
             v_from_b = [v - center for v in [p1,p2,p3,p4]]
-            stringified = [f"10;0;{x[0]};{x[1]}" for x in v_from_b]
+            stringified = [f"5;0;{x[0]};{x[1]}" for x in v_from_b]
 
-            writer.writerow(["test", offset, "dot", stringified[1]])
+            writer.writerow(["test", offset, "dot", stringified[1]] + metadata)
             offset += pt_on
-            writer.writerow(["test", offset, "blank", ""])
+            writer.writerow(["test", offset, "fix", fix_param] + metadata)
             offset += pt_off
-            writer.writerow(["test", offset, "dot", stringified[0]])
+            writer.writerow(["test", offset, "dot", stringified[0]] + metadata)
             offset += pt_on
-            writer.writerow(["test", offset, "blank", ""])
+            writer.writerow(["test", offset, "fix", fix_param] + metadata)
             offset += pt_off
-            writer.writerow(["test", offset, "dot", stringified[3]])
+            writer.writerow(["test", offset, "dot", stringified[3]] + metadata)
             offset += pt_on
-            writer.writerow(["test", offset, "blank", ""])
+            writer.writerow(["test", offset, "fix", fix_param] + metadata)
             offset += pt_off
             if out == 5:
                 star_string = f"{v_from_b[2][0]};{v_from_b[2][1]};small_star.png"
-                writer.writerow(["test", offset, "small_star", star_string])
+                writer.writerow(["test", offset, "small_star", star_string] \
+                                + metadata)
             else:
-                writer.writerow(["test", offset, "dot", stringified[2]])
+                writer.writerow(["test", offset, "dot", stringified[2]] \
+                                + metadata)
             offset += pt_on
-            writer.writerow(["test", offset, "blank", ""])
+            writer.writerow(["test", offset, "fix", fix_param] + metadata)
             offset += osa
 
-        writer.writerow(["test", offset, "blank", ""])
-        offset += (np.random.choice([6, 8, 10], 1)[0]) * 1000
+        writer.writerow(["test", offset, "fix", fix_param])
+        offset += ((np.random.choice([6, 8, 10], 1)[0]) * 1000) - 600
+        writer.writerow(["test", offset, "fix", "10;2;0;127;0"])
+        offset += 600
 
     print(f"Total duration is {offset/1000/60}min")
 

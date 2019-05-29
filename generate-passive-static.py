@@ -78,6 +78,7 @@ def generate_csv(path):
 
     refDilations = [0.875, 0.925, 0.975, 1.025, 1.075, 1.125]
     refAngles = [rot_m(a) for a in [-25, -15, -5, 5, 15, 25]]
+    fix_param = "20;2;0;127;0"
 
     writer = csv.writer(open(path, mode='w'), delimiter='\t',)
     offset = 0
@@ -117,8 +118,12 @@ def generate_csv(path):
         mrun = outlier, rot, dil
     for i, (outliers, rots, dils) in enumerate(mruns):
         for out, rot, dil in zip(outliers, rots, dils):
+            j_size = 25
+            j_x = np.random.randint(2 * j_size + 1) - j_size
+            j_y = np.random.randint(2 * j_size + 1) - j_size
+            metadata = [mrun_shapes[i], out, rot, dil, j_x, j_y]
             if out == 5:
-                writer.writerow(["test", offset, "picture", "star.png"])
+                writer.writerow(["test", offset, "picture", "star.png"] + metadata)
             else:
                 shape = shapes[mrun_shapes[i]][out]
                 # Here we should take care of the various outliers
@@ -132,14 +137,17 @@ def generate_csv(path):
                 vs = [rotate(v, refAngles[rot]) for v in vs]
                 vs = [dilate(v, refDilations[dil]) for v in vs]
                 vs = [dilate(v, 100) for v in vs]
-                string = f"0;0;0;{vs[0]};{vs[1]};{vs[2]};{vs[3]}"
-                writer.writerow(["test", offset, "shape", string])
+
+                string = f"0;{j_x};{j_y};{vs[0]};{vs[1]};{vs[2]};{vs[3]}"
+                writer.writerow(["test", offset, "shape", string] + metadata)
             offset += 200
-            writer.writerow(["test", offset, "blank", ""])
+            writer.writerow(["test", offset, "fix", fix_param] + ["","","","",""])
             offset += 800
 
-        writer.writerow(["test", offset, "blank", ""])
-        offset += (np.random.choice([6, 8, 10], 1)[0]) * 1000
+        writer.writerow(["test", offset, "fix", fix_param] + ["","","","",""])
+        offset += ((np.random.choice([6, 8, 10], 1)[0]) * 1000) - 600
+        writer.writerow(["test", offset, "fix", "10;2;0;127;0"])
+        offset += 600
 
     print(f"Total duration is {offset/1000/60}min")
 
