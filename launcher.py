@@ -70,18 +70,18 @@ def load_stimuli(stype, f, bp, args):
         return expyriment.stimuli.Picture(os.path.join(bp, f))
     elif stype == 'dot' or stype == 'circle':
         r, line_width, px, py = [float(x) for x in f.split(";")]
-        canvas = expyriment.stimuli.Canvas((400, 400))
+        canvas = expyriment.stimuli.Canvas(args["window_size"])
         dot = expyriment.stimuli.Circle(r,
                                         colour=args["stimuli_color"],
                                         line_width=line_width,
                                         position=(px, py),
                                         anti_aliasing=10)
-        fix = expyriment.stimuli.FixCross(size=(15, 15),
-                                          line_width=2,
+        fix = expyriment.stimuli.FixCross(size=(20, 20),
+                                          line_width=4,
                                           colour=(0, 127, 0))
         fix.plot(canvas)
         dot.plot(canvas)
-        return(canvas)
+        return canvas
     elif stype == 'shape':
         line_width, px, py, *v_list = [literal_eval(x) for x in f.split(";")]
         shape = expyriment.stimuli.Shape(position=(int(px), int(py)),
@@ -95,8 +95,8 @@ def load_stimuli(stype, f, bp, args):
         canvas = expyriment.stimuli.Canvas(args["window_size"])
         star = expyriment.stimuli.Picture(os.path.join(bp, path),
                                           position=(float(px), float(py)))
-        fix = expyriment.stimuli.FixCross(size=(15, 15),
-                                          line_width=2,
+        fix = expyriment.stimuli.FixCross(size=(20, 20),
+                                          line_width=4,
                                           colour=(0, 127, 0))
         fix.plot(canvas)
         star.plot(canvas)
@@ -118,9 +118,12 @@ def load_stimuli(stype, f, bp, args):
         return canvas
     elif stype == 'fix':
         size, lw, cr, cg, cb = [literal_eval(x) for x in f.split(";")]
-        return expyriment.stimuli.FixCross(size=(size, size),
-                                           line_width=lw,
-                                           colour=(cr, cg, cb))
+        canvas = expyriment.stimuli.Canvas(args["window_size"])
+        fix = expyriment.stimuli.FixCross(size=(size, size),
+                                          line_width=lw,
+                                          colour=(cr, cg, cb))
+        fix.plot(canvas)
+        return canvas
     elif stype == 'blank':
         return expyriment.stimuli.BlankScreen()
 

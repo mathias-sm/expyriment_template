@@ -87,9 +87,10 @@ def generate_csv(path):
     refAngles = [rot_m(a) for a in [-25, -15, -5, 5, 15, 25]]
     pt_on = 200
     pt_off = 50
-    osa = 500
+    osa = 550
 
-    fix_param = "15;2;0;127;0"
+    fix_param = "20;4;0;127;0"
+    fix_param_off = "15;2;0;127;0"
 
     writer = csv.writer(open(path, mode='w'), delimiter='\t',)
     offset = 0
@@ -131,7 +132,7 @@ def generate_csv(path):
     while (len(inter_time) < len(mruns)):
         inter_time += [4000, 6000, 8000]
     random.shuffle(inter_time)
-    writer.writerow([offset, "fix", "10;1;0;127;0"] + ["","","","",""])
+    writer.writerow([offset, "fix", fix_param_off] + ["","","","",""])
     offset += 2000 - 600
     writer.writerow([offset, "fix", fix_param] + ["","","","",""])
     offset += 600
@@ -194,7 +195,7 @@ def generate_csv(path):
             writer.writerow([offset, "fix", fix_param] + metadata)
             offset += osa
 
-        writer.writerow([offset, "fix", "10;1;0;127;0"])
+        writer.writerow([offset, "fix", fix_param_off] + ["","","","",""])
         offset += (inter_time[i]) - 600
         writer.writerow([offset, "fix", fix_param])
         offset += 600

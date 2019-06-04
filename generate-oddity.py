@@ -81,7 +81,8 @@ def generate_csv(s_id, r_id):
     refDilations = [0.875, 0.925, 0.975, 1.025, 1.075, 1.125]
     refAngles = [rot_m(a) for a in [-25, -15, -5, 5, 15, 25]]
 
-    fix_param = "20;2;0;127;0"
+    fix_param = "20;4;0;127;0"
+    fix_param_off = "15;2;0;127;0"
 
     writer = csv.writer(open(f"stim/oddity_{s_id}_{r_id}.csv", mode='w'), delimiter='\t',)
     offset = 0
@@ -125,7 +126,7 @@ def generate_csv(s_id, r_id):
     if not os.path.exists(f"stim/oddity_{s_id}_{r_id}/"):
         os.makedirs(f"stim/oddity_{s_id}_{r_id}/")
 
-    writer.writerow([offset, "fix", "10;1;0;127;0"] + ["","","","",""])
+    writer.writerow([offset, "fix", fix_param_off] + ["","","","",""])
     offset += 2000 - 600
     writer.writerow([offset, "fix", fix_param] + ["","","","",""])
     offset += 600
@@ -164,7 +165,7 @@ def generate_csv(s_id, r_id):
             writer.writerow([offset, "fix", fix_param] + ["","","","",""])
             offset += 4000
 
-        writer.writerow([offset, "fix", "10;1;0;127;0"] + ["","","","",""])
+        writer.writerow([offset, "fix", fix_param_off] + ["","","","",""])
         offset += (inter_time[i]) - 600
         writer.writerow([offset, "fix", fix_param] + ["","","","",""])
         offset += 600
