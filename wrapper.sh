@@ -21,15 +21,25 @@ while [ $stop -eq 0 ]; do
     esac
 done
 
+cmd_localizer='python3 localizer_standard.py
+                --background-color 0 0 0 
+                --text-color 250 250 250 --rsvp-display-time 250 
+                --rsvp-display-isi 100 --picture-display-time 200 
+                --picture-isi 0 --fs_delay_time 100 
+                --stim-dir stim_files --total-duration 301000'
+
 
 fpstat="stim/passive-static_$id.counter"
 fpseq="stim/passive-seq_$id.counter"
 foddity="stim/oddity_$id.counter"
+floc="stim/oddity_$id.counter"
 touch "$fpstat"
 touch "$fpseq"
 touch "$foddity"
+touch "$floc"
 cur_passive_static=$(cat $fpstat)
 cur_passive_seq=$(cat $fpseq)
+cur_loc=$(cat $floc)
 cur_oddity=$(cat $foddity)
 if [ -z "$cur_passive_static" ]; then
     cur_passive_static=0
@@ -38,6 +48,10 @@ fi
 if [ -z "$cur_passive_seq" ]; then
     cur_passive_seq=0
     echo 0 > "$fpseq"
+fi
+if [ -z "$cur_loc" ]; then
+    cur_loc=0
+    echo 0 > "$floc"
 fi
 if [ -z "$cur_oddity" ]; then
     cur_oddity=0
@@ -48,15 +62,14 @@ resp=""
 
 until [ "$resp" = "Quit" ]
 do
-    next=$((resp + 1))
-
     resp=$(dialog --clear --title "Experiment launcher for $id" \
-                  --nocancel --default-item  "$next" \
+                  --nocancel \
                   --output-fd 1 \
                   --menu "Select and press enter" \
-                  24 40 10 \
-                  C "Calibrate" \
-                  L "Localizer" \
+                  24 50 20 \
+                  P "Localizer Standard (Pinel)" \
+                  LNEW "Localizer Categories: new run" \
+                  LREP "Localizer Categories: repeat last" \
                   1 "Passive Static: new run" \
                   2 "Passive Static: repeat last" \
                   3 "Passive Seq: new run" \
@@ -66,10 +79,25 @@ do
                   Quit  "Quit")
 
     case $resp in
-        C)
-            python3 launcher.py calibrate;;
-        L)
-            python3 launcher.py --subject-id "$id" geom_localizer/output.csv;;
+        P)
+          $cmd_localizer \
+                    --subject-id "$id" \
+                    --csv_file stim/session1_localizer_standard.csv;;
+        LNEW)
+            cur_loc=$((cur_loc + 1))
+            python3 generate-geom-loc.py "$id" "$cur_passive_static"
+            echo "$cur_loc" > "$floc"
+            python3 launcher.py \
+                    --subject-id "$id" \
+                    "stim/geom-loc_${id}_${cur_passive_static}.csv" ;;
+        LREP)
+            if [ "$cur_loc" -eq "0" ]; then
+                dialog --msgbox "No previous run to start again?" 6 32
+            else
+                python3 launcher.py \
+                        --subject-id "$id" \
+                        "stim/geom-loc_${id}_${cur_passive_seq}.csv"
+            fi;;
         1)
             cur_passive_static=$((cur_passive_static + 1))
             python3 generate-passive-static.py "$id" "$cur_passive_static"

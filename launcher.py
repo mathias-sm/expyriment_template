@@ -156,7 +156,7 @@ def main():
         # ATTENTION : Encoding is platform dependant. See the open() manual
         for row in csv.reader(open(csv_file), delimiter='\t'):
             # Destruct a row into its parts, they will be of type str
-            cond, onset, stype, f, *meta = row
+            onset, stype, f, *meta = row
 
             # If this is the first encounter of this stimuli then preload it
             if (stype, f) not in hash_table:
@@ -164,7 +164,7 @@ def main():
                 hash_table[stype, f].preload()
 
             # Then push relevant events based on the type
-            events.put((int(onset), cond, stype, f, (stype, f)))
+            events.put((int(onset), stype, f, (stype, f)))
 
     expyriment.control.start(skip_ready_screen=True,
                              subject_id=args["--subject-id"])
@@ -175,19 +175,19 @@ def main():
     # Start the experiment clock and loop through the events
     clock = expyriment.misc.Clock()
     while not events.empty():
-        onset, cond, stype, id, (stype, f) = events.get()
+        onset, stype, id, (stype, f) = events.get()
 
         # If it's still too early, then wait for the onset but log keypresses
         while clock.time < (onset - 1):
             # clock.wait(1) why though? Shouldn't we run as fast as we can?
             k = kb.check()
             if k is not None:
-                exp.data.add([clock.time, f"keypressed,{k}"])
+                exp.data.add([clock.time, keypressed, k])
 
         # When time has come, present the stimuli and log that you just did so
         # Essayer de synchroniser ça avec les flips
-        hash_table[stype, f].present()
-        exp.data.add([f"{cond}", clock.time, f"{stype},{id},{onset}"])
+        reported_time = hash_table[stype, f].present()
+        exp.data.add([clock.time, stype, id, onset, reported_time])
 
     # Now the experiment is done, terminate the exp
     expyriment.control.end('Merci !', 2000)

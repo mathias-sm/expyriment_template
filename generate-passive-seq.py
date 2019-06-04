@@ -12,8 +12,8 @@ optional arguments:
 import csv
 import random
 import json
+import datetime
 import docopt
-import os.path
 import numpy as np
 
 from math import cos, sin, pi, acos
@@ -127,6 +127,14 @@ def generate_csv(path):
             while dil[i] == dil[i+1]:
                 dil[i+1] = random.randint(0, 5)
         mrun = outlier, rot, dil
+    inter_time = []
+    while (len(inter_time) < len(mruns)):
+        inter_time += [4000, 6000, 8000]
+    random.shuffle(inter_time)
+    writer.writerow([offset, "fix", "10;2;0;127;0"] + ["","","","",""])
+    offset += 2000 - 600
+    writer.writerow([offset, "fix", fix_param] + ["","","","",""])
+    offset += 600
     for i, (outliers, rots, dils) in enumerate(mruns):
         for out, rot, dil in zip(outliers, rots, dils):
             shape = shapes[mrun_shapes[i]][out % 5] # maps 5 = star -> rule
@@ -148,14 +156,13 @@ def generate_csv(path):
             p3 = p2 + vs[1]
             p4 = p3 + vs[2]
             ps = [p1,p2,p3,p4]
-            # Note : sauvegarder le jitter
-            jitter_size = 25
-            jitter_x = np.random.randint(2 * jitter_size + 1) - jitter_size
-            jitter_y = np.random.randint(2 * jitter_size + 1) - jitter_size
-            ps = [x + [jitter_x , jitter_y] for x in ps]
+            j_size = 25
+            j_x = np.random.randint(2 * j_size + 1) - j_size
+            j_y = np.random.randint(2 * j_size + 1) - j_size
+            ps = [x + [j_x , j_y] for x in ps]
             assert((abs(p1 - (p4 + vs[3])) < 0.0000001).all())
 
-            metadata = [mrun_shapes[i], out, rot, dil, jitter_x, jitter_y]
+            metadata = [mrun_shapes[i], out, rot, dil, j_x, j_y]
 
             # Saddly, Expyriment uses the center of the bounding box, not
             # this one: barycenter = (p1 + p2 + p3 + p4) / 4     ;(
@@ -164,35 +171,35 @@ def generate_csv(path):
             v_from_b = [v - center for v in [p1,p2,p3,p4]]
             stringified = [f"5;0;{x[0]};{x[1]}" for x in v_from_b]
 
-            writer.writerow(["test", offset, "dot", stringified[1]] + metadata)
+            writer.writerow([offset, "dot", stringified[1]] + metadata)
             offset += pt_on
-            writer.writerow(["test", offset, "fix", fix_param] + metadata)
+            writer.writerow([offset, "fix", fix_param] + metadata)
             offset += pt_off
-            writer.writerow(["test", offset, "dot", stringified[0]] + metadata)
+            writer.writerow([offset, "dot", stringified[0]] + metadata)
             offset += pt_on
-            writer.writerow(["test", offset, "fix", fix_param] + metadata)
+            writer.writerow([offset, "fix", fix_param] + metadata)
             offset += pt_off
-            writer.writerow(["test", offset, "dot", stringified[3]] + metadata)
+            writer.writerow([offset, "dot", stringified[3]] + metadata)
             offset += pt_on
-            writer.writerow(["test", offset, "fix", fix_param] + metadata)
+            writer.writerow([offset, "fix", fix_param] + metadata)
             offset += pt_off
             if out == 5:
                 star_string = f"{v_from_b[2][0]};{v_from_b[2][1]};small_star.png"
-                writer.writerow(["test", offset, "small_star", star_string] \
+                writer.writerow([offset, "small_star", star_string] \
                                 + metadata)
             else:
-                writer.writerow(["test", offset, "dot", stringified[2]] \
+                writer.writerow([offset, "dot", stringified[2]] \
                                 + metadata)
             offset += pt_on
-            writer.writerow(["test", offset, "fix", fix_param] + metadata)
+            writer.writerow([offset, "fix", fix_param] + metadata)
             offset += osa
 
-        writer.writerow(["test", offset, "fix", fix_param])
-        offset += ((np.random.choice([6, 8, 10], 1)[0]) * 1000) - 600
-        writer.writerow(["test", offset, "fix", "10;2;0;127;0"])
+        writer.writerow([offset, "fix", "10;2;0;127;0"])
+        offset += (inter_time[i]) - 600
+        writer.writerow([offset, "fix", fix_param])
         offset += 600
 
-    print(f"Total duration is {offset/1000/60}min")
+    print(f"Total duration is {str(datetime.timedelta(milliseconds=offset))}")
 
 
 if __name__ == "__main__":

@@ -13,6 +13,7 @@ import csv
 import random
 import json
 import docopt
+import datetime
 import os
 import numpy as np
 
@@ -115,9 +116,19 @@ def generate_csv(s_id, r_id):
         randomized_type[shape] += l2
         randomized_type[shape] = [x + 1 for x in randomized_type[shape]]
 
+    inter_time = []
+    while (len(inter_time) < len(names)):
+        inter_time += [4000, 6000, 8000]
+    random.shuffle(inter_time)
+
+
     if not os.path.exists(f"stim/oddity_{s_id}_{r_id}/"):
         os.makedirs(f"stim/oddity_{s_id}_{r_id}/")
 
+    writer.writerow([offset, "fix", "10;2;0;127;0"] + ["","","","",""])
+    offset += 2000 - 600
+    writer.writerow([offset, "fix", fix_param] + ["","","","",""])
+    offset += 600
     for i, shape_name in enumerate(names):
         for j in range(10):
             dils = list(np.random.permutation(range(6)))
@@ -148,17 +159,17 @@ def generate_csv(s_id, r_id):
                 vs = [dilate(v, 75) for v in vs]
                 writer_stim.writerow(vs)
 
-            writer.writerow(["test", offset, "oddity", stim_fname] + metadata)
+            writer.writerow([offset, "oddity", stim_fname] + metadata)
             offset += 200
-            writer.writerow(["test", offset, "fix", fix_param] + ["","","","",""])
+            writer.writerow([offset, "fix", fix_param] + ["","","","",""])
             offset += 4000
 
-        writer.writerow(["test", offset, "fix", fix_param] + ["","","","",""])
-        offset += ((np.random.choice([6, 8, 10], 1)[0]) * 1000) - 600
-        writer.writerow(["test", offset, "fix", "10;2;0;127;0"] + ["","","","",""])
+        writer.writerow([offset, "fix", "10;2;0;127;0"] + ["","","","",""])
+        offset += (inter_time[i]) - 600
+        writer.writerow([offset, "fix", fix_param] + ["","","","",""])
         offset += 600
 
-    print(f"Total duration is {offset/1000/60}min")
+    print(f"Total duration is {str(datetime.timedelta(milliseconds=offset))}")
 
 
 if __name__ == "__main__":

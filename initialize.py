@@ -33,10 +33,10 @@ def init_arguments(args):
 def init_expyriment(args):
     """Given the CLI arguments, initialize the experiment"""
 
-    expyriment.control.defaults.window_mode = True
-    expyriment.control.defaults.window_size = args["window_size"]
+    expyriment.control.defaults.window_mode = False
+    # expyriment.control.defaults.window_size = args["window_size"]
     expyriment.design.defaults.experiment_background_colour = args["bg_color"]
-    expyriment.control.defaults.fast_quit = True
+    expyriment.control.defaults.fast_quit = False
     expyriment.control.defaults.initialize_delay = 0
     exp = expyriment.design.Experiment(name=args["--exp-name"])
     exp.add_data_variable_names(['condition',
