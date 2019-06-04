@@ -125,7 +125,7 @@ def generate_csv(s_id, r_id):
     if not os.path.exists(f"stim/oddity_{s_id}_{r_id}/"):
         os.makedirs(f"stim/oddity_{s_id}_{r_id}/")
 
-    writer.writerow([offset, "fix", "10;2;0;127;0"] + ["","","","",""])
+    writer.writerow([offset, "fix", "10;1;0;127;0"] + ["","","","",""])
     offset += 2000 - 600
     writer.writerow([offset, "fix", fix_param] + ["","","","",""])
     offset += 600
@@ -164,7 +164,7 @@ def generate_csv(s_id, r_id):
             writer.writerow([offset, "fix", fix_param] + ["","","","",""])
             offset += 4000
 
-        writer.writerow([offset, "fix", "10;2;0;127;0"] + ["","","","",""])
+        writer.writerow([offset, "fix", "10;1;0;127;0"] + ["","","","",""])
         offset += (inter_time[i]) - 600
         writer.writerow([offset, "fix", fix_param] + ["","","","",""])
         offset += 600

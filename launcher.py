@@ -37,7 +37,7 @@ import initialize
 # Used for fast tuple-parsing in loading shapes vertices
 from ast import literal_eval
 # Used for stimuli in circle in oddity
-from math import sin, cos, pi, sqrt
+from math import sin, cos, pi
 
 
 def calibration(exp, args):
@@ -70,8 +70,7 @@ def load_stimuli(stype, f, bp, args):
         return expyriment.stimuli.Picture(os.path.join(bp, f))
     elif stype == 'dot' or stype == 'circle':
         r, line_width, px, py = [float(x) for x in f.split(";")]
-        d = 2*(max(abs(px), abs(py)) + 2*r)
-        canvas = expyriment.stimuli.Canvas((d,d))
+        canvas = expyriment.stimuli.Canvas((400, 400))
         dot = expyriment.stimuli.Circle(r,
                                         colour=args["stimuli_color"],
                                         line_width=line_width,
@@ -79,7 +78,7 @@ def load_stimuli(stype, f, bp, args):
                                         anti_aliasing=10)
         fix = expyriment.stimuli.FixCross(size=(15, 15),
                                           line_width=2,
-                                          colour=(0,127,0))
+                                          colour=(0, 127, 0))
         fix.plot(canvas)
         dot.plot(canvas)
         return(canvas)
@@ -93,8 +92,15 @@ def load_stimuli(stype, f, bp, args):
         return shape
     if stype == "small_star":
         px, py, path = f.split(";")
-        return expyriment.stimuli.Picture(os.path.join(bp, path),
+        canvas = expyriment.stimuli.Canvas(args["window_size"])
+        star = expyriment.stimuli.Picture(os.path.join(bp, path),
                                           position=(float(px), float(py)))
+        fix = expyriment.stimuli.FixCross(size=(15, 15),
+                                          line_width=2,
+                                          colour=(0, 127, 0))
+        fix.plot(canvas)
+        star.plot(canvas)
+        return canvas
     elif stype == "oddity":
         canvas = expyriment.stimuli.Canvas(args["window_size"])
         fpath = os.path.join(bp, f)
@@ -114,7 +120,7 @@ def load_stimuli(stype, f, bp, args):
         size, lw, cr, cg, cb = [literal_eval(x) for x in f.split(";")]
         return expyriment.stimuli.FixCross(size=(size, size),
                                            line_width=lw,
-                                           colour=(cr,cg,cb))
+                                           colour=(cr, cg, cb))
     elif stype == 'blank':
         return expyriment.stimuli.BlankScreen()
 
@@ -169,7 +175,7 @@ def main():
     expyriment.control.start(skip_ready_screen=True,
                              subject_id=args["--subject-id"])
 
-    show_text("Waiting for scanner sync (or press 't')", args).present()
+    show_text("Waiting for scanner trigger", args).present()
     kb.wait_char('t')
 
     # Start the experiment clock and loop through the events
@@ -179,13 +185,11 @@ def main():
 
         # If it's still too early, then wait for the onset but log keypresses
         while clock.time < (onset - 1):
-            # clock.wait(1) why though? Shouldn't we run as fast as we can?
             k = kb.check()
             if k is not None:
-                exp.data.add([clock.time, keypressed, k])
+                exp.data.add([clock.time, "keypressed", k])
 
         # When time has come, present the stimuli and log that you just did so
-        # Essayer de synchroniser ça avec les flips
         reported_time = hash_table[stype, f].present()
         exp.data.add([clock.time, stype, id, onset, reported_time])
 

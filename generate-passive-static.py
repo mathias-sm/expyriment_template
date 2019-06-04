@@ -121,7 +121,7 @@ def generate_csv(path):
     while (len(inter_time) < len(mruns)):
         inter_time += [4000, 6000, 8000]
     random.shuffle(inter_time)
-    writer.writerow([offset, "fix", "10;2;0;127;0"] + ["","","","",""])
+    writer.writerow([offset, "fix", "10;1;0;127;0"] + ["","","","",""])
     offset += 2000 - 600
     writer.writerow([offset, "fix", fix_param] + ["","","","",""])
     offset += 600
@@ -153,7 +153,7 @@ def generate_csv(path):
             writer.writerow([offset, "fix", fix_param] + ["","","","",""])
             offset += 800
 
-        writer.writerow([offset, "fix", "10;2;0;127;0"])
+        writer.writerow([offset, "fix", "10;1;0;127;0"])
         offset += (inter_time[i]) - 600
         writer.writerow([offset, "fix", fix_param])
         offset += 600
