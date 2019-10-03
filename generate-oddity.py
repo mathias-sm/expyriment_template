@@ -84,7 +84,7 @@ def generate_csv(s_id, r_id):
     fix_param = "20;4;0;127;0"
     fix_param_off = "15;2;0;127;0"
 
-    writer = csv.writer(open(f"stim/oddity_{s_id}_{r_id}.csv", mode='w'), delimiter='\t',)
+    writer = csv.writer(open(f"stim/oddity_{s_id}_{r_id}.csv", mode='w'), delimiter='\t',lineterminator='\n')
     offset = 0
     shapes = json.load(open("shapes.json", mode="r"))
     shapes = {shape: outlierize(shapes[shape]) for shape in shapes.keys()}
@@ -141,7 +141,7 @@ def generate_csv(s_id, r_id):
             out_pos = randomized_pos[shape_name][j]
             out_type = randomized_type[shape_name][j]
             stim_fname = f"stim/oddity_{s_id}_{r_id}/{shape_name}_{j}.csv"
-            writer_stim = csv.writer(open(stim_fname, mode='w'), delimiter=';')
+            writer_stim = csv.writer(open(stim_fname, mode='w'), delimiter=';', lineterminator='\n')
 
             metadata = [shape_name, dils, rots, out_pos, out_type]
             

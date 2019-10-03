@@ -92,7 +92,7 @@ def generate_csv(path):
     fix_param = "20;4;0;127;0"
     fix_param_off = "15;2;0;127;0"
 
-    writer = csv.writer(open(path, mode='w'), delimiter='\t',)
+    writer = csv.writer(open(path, mode='w'), delimiter='\t',lineterminator='\n')
     offset = 0
     shapes = json.load(open("shapes.json", mode="r"))
     shapes = {shape: outlierize(shapes[shape]) for shape in shapes.keys()}

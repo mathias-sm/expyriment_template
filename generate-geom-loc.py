@@ -19,7 +19,7 @@ import numpy as np
 
 def generate_csv(path):
     """Blabla This is useful"""
-    writer = csv.writer(open(path, mode='w'), delimiter='\t',)
+    writer = csv.writer(open(path, mode='w'), delimiter='\t', lineterminator='\n')
     offset = 0
     ref_list = ['face', 'text', 'tool', 'number', 'shapes', 'shapes_alone', 'house', 'checker']
     dirs_list = ref_list.copy()
