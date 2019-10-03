@@ -90,8 +90,16 @@ def generate_csv(path):
     super_outlier_bloc_pos = ([1, 0] * len(names))
     random.shuffle(super_outlier_bloc_pos)
     mruns = [(([0]*20), ([0]*20), ([0]*20)) for _ in range(len(names)*2)]
-    mrun_shapes = names*2
+
+    # Shuffle without repetition on the join point
+    mrun_shapes = names.copy()
+    tmp = names.copy()
     random.shuffle(mrun_shapes)
+    random.shuffle(tmp)
+    while (mrun_shapes[-1] == tmp[0]):
+        random.shuffle(tmp)
+    mrun_shapes += tmp
+
     used = {k: list(np.random.permutation([1, 2, 3, 4])) for k in names}
     for i, mrun in enumerate(mruns):
         pos = []
@@ -118,10 +126,16 @@ def generate_csv(path):
             while dil[i] == dil[i+1]:
                 dil[i+1] = random.randint(0, 5)
         mrun = outlier, rot, dil
+
     inter_time = []
-    while (len(inter_time) < len(mruns)):
+    while (len(inter_time) + 3 <= len(mruns)):
         inter_time += [4000, 6000, 8000]
+    if (len(inter_time) + 2 == len(mruns)):
+        inter_time += [4000, 8000]
+    elif (len(inter_time) + 1 == len(mruns)):
+        inter_time += [6000]
     random.shuffle(inter_time)
+
     writer.writerow([offset, "fix", "10;1;0;127;0"])
     offset += 2000 - 600
     writer.writerow([offset, "fix", fix_param] + ["","","","",""])
@@ -160,7 +174,9 @@ def generate_csv(path):
         offset += 600
 
     print(f"Total duration is {str(datetime.timedelta(milliseconds=offset))}")
-
+    print(f"Assume {2+int(offset/1000/1.81)}TRs")
+    writer.writerow([offset, "fix", fix_param] + ["","","","",""])
+    offset += 6000
 
 if __name__ == "__main__":
     args = docopt.docopt(__doc__, version='0.0.1')

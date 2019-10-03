@@ -118,8 +118,12 @@ def generate_csv(s_id, r_id):
         randomized_type[shape] = [x + 1 for x in randomized_type[shape]]
 
     inter_time = []
-    while (len(inter_time) < len(names)):
+    while (len(inter_time) + 3 <= len(names)):
         inter_time += [4000, 6000, 8000]
+    if (len(inter_time) + 2 == len(names)):
+        inter_time += [4000, 8000]
+    elif (len(inter_time) + 1 == len(names)):
+        inter_time += [6000]
     random.shuffle(inter_time)
 
 
@@ -164,6 +168,9 @@ def generate_csv(s_id, r_id):
             offset += 200
             writer.writerow([offset, "fix", fix_param] + ["","","","",""])
             offset += 4000
+            if j == 4:
+                writer.writerow([offset, "fix", fix_param] + ["","","","",""])
+                offset += 4000
 
         writer.writerow([offset, "fix", fix_param_off] + ["","","","",""])
         offset += (inter_time[i]) - 600
@@ -171,6 +178,9 @@ def generate_csv(s_id, r_id):
         offset += 600
 
     print(f"Total duration is {str(datetime.timedelta(milliseconds=offset))}")
+    print(f"Assume {2+int(offset/1000/1.81)}TRs")
+    writer.writerow([offset, "fix", fix_param] + ["","","","",""])
+    offset += 6000
 
 
 if __name__ == "__main__":

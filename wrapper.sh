@@ -4,7 +4,7 @@ trap '{ rm -f $tempfile; }' EXIT
 id=""
 if [ $# -eq 0 ]
 then
-    id=$(dialog --output-fd 1 --inputbox "Input the unique ID of the subject" 8 60)
+    id=$(dialog --output-fd 1 --inputbox "Input the unique ID of the participant" 8 60)
 else
     id="$1"
 fi
@@ -14,7 +14,7 @@ while [ $stop -eq 0 ]; do
     case $id in
         ''|*[!0-9]*)
             dialog --msgbox "Only numbers are allowed" 6 32
-            id=$(dialog --output-fd 1 --inputbox "Input the unique ID of the subject" 8 60)
+            id=$(dialog --output-fd 1 --inputbox "Input the unique ID of the participant" 8 60)
             stop="0" ;;
         *)
             stop="1" ;;
@@ -67,7 +67,9 @@ do
                   --output-fd 1 \
                   --menu "Select and press enter" \
                   24 50 20 \
-                  P "Localizer Standard (Pinel)" \
+                  P1 "Localizer Standard (Pinel)" \
+                  P2 "Localizer Standard no_audio (Pinel)" \
+                  P3 "Localizer Standard no_audio doubled (Pinel)" \
                   LNEW "Localizer Categories: new run" \
                   LREP "Localizer Categories: repeat last" \
                   1 "Passive Static: new run" \
@@ -79,10 +81,18 @@ do
                   Quit  "Quit")
 
     case $resp in
-        P)
+        P1)
           $cmd_localizer \
                     --subject-id "$id" \
                     --csv_file stim/session1_localizer_standard.csv;;
+        P2)
+          $cmd_localizer \
+                    --subject-id "$id" \
+                    --csv_file stim/session1_localizer_standard_noaudio.csv;;
+        P3)
+          $cmd_localizer \
+                    --subject-id "$id" \
+                    --csv_file stim/session1_localizer_standard_noaudio_doubled.csv;;
         LNEW)
             cur_loc=$((cur_loc + 1))
             python3 generate-geom-loc.py "$id" "$cur_passive_static"
