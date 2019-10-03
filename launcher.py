@@ -23,7 +23,7 @@ optional arguments:
   --subject-id SUBJECT_ID ID of the starting subject
   --stim-dir STIM_DIR     Directory to look for stimuli [default: STIM_DIR/]
   --exp-name EXP_NAME     Name of the experiment        [default: "Default"]
-  --text-font TEXT_FONT   Font to use to display text   [default: "dejavusans"]
+  --text-font TEXT_FONT   Font to use to display text   [default: "freesans"]
   --text-size TEXT_SIZE   Font size used for text       [default: 48]
 """
 
