@@ -178,11 +178,18 @@ def main():
     expyriment.control.start(skip_ready_screen=True,
                              subject_id=args["--subject-id"])
 
+    good = expyriment.stimuli.Audio(bp + "/correct.wav")
+    bad = expyriment.stimuli.Audio(bp + "/incorrect.wav")
+    good.preload()
+    bad.preload()
+
     show_text("Waiting for scanner trigger", args).present()
     kb.wait_char('t')
 
     # Start the experiment clock and loop through the events
     clock = expyriment.misc.Clock()
+    last_right_pos = -1
+    has_played = False
     while not events.empty():
         onset, stype, id, (stype, f), *meta = events.get()
 
@@ -191,9 +198,24 @@ def main():
             k = kb.check()
             if k is not None:
                 exp.data.add([clock.time, "keypressed", k])
+                if (not has_played):
+                    has_played = True
+                    if k == 114:
+                        if last_right_pos in [0, 1, 5]:
+                            good.present()
+                        elif last_right_pos in [2, 3, 4]:
+                            bad.present()
+                    elif k == 108:
+                        if last_right_pos in [2, 3, 4]:
+                            good.present()
+                        elif last_right_pos in [0, 1, 5]:
+                            bad.present()
 
         # When time has come, present the stimuli and log that you just did so
         reported_time = hash_table[stype, f].present()
+        if (stype == "oddity"):
+            last_right_pos = int(meta[0][3])
+            has_played = False
         exp.data.add(list([clock.time, stype, id, onset, reported_time] + meta[0]))
 
     # Now the experiment is done, terminate the exp
