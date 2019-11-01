@@ -29,10 +29,10 @@ cmd_localizer='python3 localizer_standard.py
                 --stim-dir stim_files --total-duration 301000'
 
 
-fpstat="stim/passive-static_$id.counter"
-fpseq="stim/passive-seq_$id.counter"
-foddity="stim/oddity_$id.counter"
-floc="stim/oddity_$id.counter"
+fpstat="generated/passive-static_$id.counter"
+fpseq="generated/passive-seq_$id.counter"
+foddity="generated/oddity_$id.counter"
+floc="generated/oddity_$id.counter"
 touch "$fpstat"
 touch "$fpseq"
 touch "$foddity"
@@ -99,14 +99,14 @@ do
             echo "$cur_loc" > "$floc"
             python3 launcher.py \
                     --subject-id "$id" \
-                    "stim/geom-loc_${id}_${cur_passive_static}.csv" ;;
+                    "generated/geom-loc_${id}_${cur_passive_static}.csv" ;;
         LREP)
             if [ "$cur_loc" -eq "0" ]; then
                 dialog --msgbox "No previous run to start again?" 6 32
             else
                 python3 launcher.py \
                         --subject-id "$id" \
-                        "stim/geom-loc_${id}_${cur_passive_seq}.csv"
+                        "generated/geom-loc_${id}_${cur_passive_seq}.csv"
             fi;;
         1)
             cur_passive_static=$((cur_passive_static + 1))
@@ -114,14 +114,14 @@ do
             echo "$cur_passive_static" > "$fpstat"
             python3 launcher.py \
                     --subject-id "$id" \
-                    "stim/passive-static_${id}_${cur_passive_static}.csv" ;;
+                    "generated/passive-static_${id}_${cur_passive_static}.csv" ;;
         2)
             if [ "$cur_passive_static" -eq "0" ]; then
                 dialog --msgbox "No previous run to start again?" 6 32
             else
                 python3 launcher.py \
                         --subject-id "$id" \
-                        "stim/passive-static_${id}_${cur_passive_static}.csv"
+                        "generated/passive-static_${id}_${cur_passive_static}.csv"
             fi;;
         3)
             cur_passive_seq=$((cur_passive_seq + 1))
@@ -129,14 +129,14 @@ do
             echo "$cur_passive_seq" > "$fpseq"
             python3 launcher.py \
                     --subject-id "$id" \
-                    "stim/passive-seq_${id}_${cur_passive_seq}.csv" ;;
+                    "generated/passive-seq_${id}_${cur_passive_seq}.csv" ;;
         4)
             if [ "$cur_passive_seq" -eq "0" ]; then
                 dialog --msgbox "No previous run to start again?" 6 32
             else
                 python3 launcher.py \
                         --subject-id "$id" \
-                        "stim/passive-seq_${id}_${cur_passive_seq}.csv"
+                        "generated/passive-seq_${id}_${cur_passive_seq}.csv"
             fi;;
         5)
             cur_oddity=$((cur_oddity + 1))
@@ -144,14 +144,14 @@ do
             echo "$cur_passive_seq" > "$foddity"
             python3 launcher.py \
                     --subject-id "$id" \
-                    "stim/oddity_${id}_${cur_oddity}.csv" ;;
+                    "generated/oddity_${id}_${cur_oddity}.csv" ;;
         6)
             if [ "$cur_oddity" -eq "0" ]; then
                 dialog --msgbox "No previous run to start again?" 6 32
             else
                 python3 launcher.py \
                         --subject-id "$id" \
-                        "stim/oddity_${id}_${cur_oddity}.csv"
+                        "generated/oddity_${id}_${cur_oddity}.csv"
             fi;;
         7)
             echo "session 3";;

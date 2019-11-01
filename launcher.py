@@ -103,7 +103,7 @@ def load_stimuli(stype, f, bp, args):
         return canvas
     elif stype == "oddity":
         canvas = expyriment.stimuli.Canvas(args["window_size"])
-        fpath = os.path.join(bp, f)
+        fpath = f
         dist = 200
         alpha = 2*pi/6
         for i, shape in enumerate(csv.reader(open(fpath), delimiter=';')):
@@ -159,7 +159,7 @@ def main():
         exp.add_experiment_info(csv_file)
 
         # Create the path to the stimuli
-        bp = os.path.join(os.path.dirname(csv_file), args["--stim-dir"])
+        bp = args["--stim-dir"]
 
         # Open the csv file and read its rows.
         # ATTENTION : Encoding is platform dependant. See the open() manual

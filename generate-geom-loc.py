@@ -52,7 +52,7 @@ def generate_csv(path):
 
     # Actual generation
     for k, dirs in enumerate(dirs_list):
-        bp = os.path.join("stim/STIM_DIR", dirs)
+        bp = os.path.join("STIM_DIR", dirs)
         if dirs == 'checker':
             files = np.tile(["checker01.png", "checker02.png"], 10)
         else:
@@ -83,4 +83,4 @@ if __name__ == "__main__":
     args = docopt.docopt(__doc__, version='0.0.1')
     s_id = args["<subject_id>"]
     r_id = args["<run_id>"]
-    generate_csv(f"stim/geom-loc_{s_id}_{r_id}.csv")
+    generate_csv(f"generated/geom-loc_{s_id}_{r_id}.csv")

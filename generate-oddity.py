@@ -84,7 +84,7 @@ def generate_csv(s_id, r_id):
     fix_param = "20;4;0;127;0"
     fix_param_off = "15;2;0;127;0"
 
-    writer = csv.writer(open(f"stim/oddity_{s_id}_{r_id}.csv", mode='w'), delimiter='\t',lineterminator='\n')
+    writer = csv.writer(open(f"generated/oddity_{s_id}_{r_id}.csv", mode='w'), delimiter='\t',lineterminator='\n')
     offset = 0
     shapes = json.load(open("shapes.json", mode="r"))
     shapes = {shape: outlierize(shapes[shape]) for shape in shapes.keys()}
@@ -127,8 +127,8 @@ def generate_csv(s_id, r_id):
     random.shuffle(inter_time)
 
 
-    if not os.path.exists(f"stim/oddity_{s_id}_{r_id}/"):
-        os.makedirs(f"stim/oddity_{s_id}_{r_id}/")
+    if not os.path.exists(f"STIM_DIR/oddity_{s_id}_{r_id}/"):
+        os.makedirs(f"STIM_DIR/oddity_{s_id}_{r_id}/")
 
     writer.writerow([offset, "fix", fix_param_off] + ["","","","",""])
     offset += 2000 - 600
@@ -140,7 +140,7 @@ def generate_csv(s_id, r_id):
             rots = list(np.random.permutation(range(6)))
             out_pos = randomized_pos[shape_name][j]
             out_type = randomized_type[shape_name][j]
-            stim_fname = f"stim/oddity_{s_id}_{r_id}/{shape_name}_{j}.csv"
+            stim_fname = f"STIM_DIR/oddity_{s_id}_{r_id}/{shape_name}_{j}.csv"
             writer_stim = csv.writer(open(stim_fname, mode='w'), delimiter=';', lineterminator='\n')
 
             metadata = [shape_name, dils, rots, out_pos, out_type]

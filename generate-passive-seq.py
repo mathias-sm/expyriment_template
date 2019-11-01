@@ -224,4 +224,4 @@ if __name__ == "__main__":
     args = docopt.docopt(__doc__, version='0.0.1')
     s_id = args["<subject_id>"]
     r_id = args["<run_id>"]
-    generate_csv(f"stim/passive-seq_{s_id}_{r_id}.csv")
+    generate_csv(f"generated/passive-seq_{s_id}_{r_id}.csv")
