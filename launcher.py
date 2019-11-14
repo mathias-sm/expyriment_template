@@ -23,7 +23,7 @@ optional arguments:
   --subject-id SUBJECT_ID ID of the starting subject
   --stim-dir STIM_DIR     Directory to look for stimuli [default: STIM_DIR/]
   --exp-name EXP_NAME     Name of the experiment        [default: "Default"]
-  --text-font TEXT_FONT   Font to use to display text   [default: "freesans"]
+  --text-font TEXT_FONT   Font to use to display text   [default: "arial"]
   --text-size TEXT_SIZE   Font size used for text       [default: 48]
 """
 
@@ -105,15 +105,36 @@ def load_stimuli(stype, f, bp, args):
         canvas = expyriment.stimuli.Canvas(args["window_size"])
         fpath = f
         dist = 200
+        split = 100
         alpha = 2*pi/6
         for i, shape in enumerate(csv.reader(open(fpath), delimiter=';')):
             v_list = [literal_eval(x) for x in shape]
             px, py = [dist * f(i*alpha) for f in [cos, sin]]
+            px = px + (1 if i in [0, 1, 5] else (-1)) * split
             shape = expyriment.stimuli.Shape(position=(int(px), int(py)),
                                              colour=args["stimuli_color"],
                                              line_width=0,
                                              anti_aliasing=10)
             shape.add_vertices(v_list)
+            shape.plot(canvas)
+        return canvas
+    elif stype == "oddity-faces":
+        canvas = expyriment.stimuli.Canvas(args["window_size"])
+        fpath = f
+        dist = 120
+        split = 100
+        alpha = 2*pi/6
+        for i, data in enumerate(csv.reader(open(fpath), delimiter=';')):
+            face = data[0]
+            dil = float(data[1])
+            rot = int(data[2])
+            px, py = [dist * f(i*alpha) for f in [cos, sin]]
+            px = px + (1 if i in [0, 1, 5] else (-1)) * split
+            path = os.path.join(bp, "faces_morph", face)
+            shape = expyriment.stimuli.Picture(path,
+                                               position=(int(px), int(py)))
+            shape.rotate(rot)
+            shape.scale((1/3) * dil)
             shape.plot(canvas)
         return canvas
     elif stype == 'fix':
