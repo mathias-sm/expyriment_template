@@ -219,7 +219,7 @@ def main():
             k = kb.check()
             if k is not None:
                 exp.data.add([clock.time, "keypressed", k])
-                if (not has_played):
+                if (not has_played) and (stype == "oddity" or stype == "oddity-faces"):
                     has_played = True
                     if k == 114:
                         if last_right_pos in [0, 1, 5]:
@@ -234,8 +234,8 @@ def main():
 
         # When time has come, present the stimuli and log that you just did so
         reported_time = hash_table[stype, f].present()
-        if (stype == "oddity"):
-            last_right_pos = int(meta[0][3])
+        if (stype == "oddity" or stype == "oddity-faces"):
+            last_right_pos = int(meta[0][0])
             has_played = False
         exp.data.add(list([clock.time, stype, id, onset, reported_time] + meta[0]))
 
